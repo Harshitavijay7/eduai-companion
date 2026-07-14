@@ -1,0 +1,46 @@
+import axios from "axios";
+
+// Base URL for the FastAPI backend. Configure via VITE_API_URL.
+const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
+
+export const api = axios.create({
+  baseURL: BASE_URL,
+  headers: { "Content-Type": "application/json" },
+});
+
+// Attach auth token if present (frontend-only placeholder)
+api.interceptors.request.use((config) => {
+  if (typeof window !== "undefined") {
+    const token = window.localStorage.getItem("il_token");
+    if (token) config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
+/**
+ * API service placeholders — wire these to your FastAPI backend.
+ * All methods return the raw response data.
+ */
+export const IntelliLearnAPI = {
+  health: () => api.get("/").then((r) => r.data),
+  upload: (file: File) => {
+    const fd = new FormData();
+    fd.append("file", file);
+    return api.post("/upload", fd, { headers: { "Content-Type": "multipart/form-data" } }).then((r) => r.data);
+  },
+  ask: (question: string, docId?: string) =>
+    api.get("/ask", { params: { question, doc_id: docId } }).then((r) => r.data),
+  notes: (docId: string, style: string) =>
+    api.get("/notes", { params: { doc_id: docId, style } }).then((r) => r.data),
+  mcq: (docId: string, count: number, difficulty: string) =>
+    api.get("/mcq", { params: { doc_id: docId, count, difficulty } }).then((r) => r.data),
+  flashcards: (docId: string) => api.get("/flashcards", { params: { doc_id: docId } }).then((r) => r.data),
+  analytics: () => api.get("/analytics").then((r) => r.data),
+  ocr: (file: File) => {
+    const fd = new FormData();
+    fd.append("file", file);
+    return api.get("/ocr", { params: {} }).then((r) => r.data);
+  },
+  formula: (docId: string) => api.get("/formula", { params: { doc_id: docId } }).then((r) => r.data),
+  code: (docId: string) => api.get("/code", { params: { doc_id: docId } }).then((r) => r.data),
+};
