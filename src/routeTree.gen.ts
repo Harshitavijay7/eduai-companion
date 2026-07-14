@@ -13,6 +13,20 @@ import { Route as RegisterRouteImport } from './routes/register'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as AppRouteImport } from './routes/app'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AppIndexRouteImport } from './routes/app.index'
+import { Route as AppUploadRouteImport } from './routes/app.upload'
+import { Route as AppSettingsRouteImport } from './routes/app.settings'
+import { Route as AppQuizRouteImport } from './routes/app.quiz'
+import { Route as AppOcrRouteImport } from './routes/app.ocr'
+import { Route as AppNotesRouteImport } from './routes/app.notes'
+import { Route as AppMcqsRouteImport } from './routes/app.mcqs'
+import { Route as AppLibraryRouteImport } from './routes/app.library'
+import { Route as AppHistoryRouteImport } from './routes/app.history'
+import { Route as AppFormulasRouteImport } from './routes/app.formulas'
+import { Route as AppFlashcardsRouteImport } from './routes/app.flashcards'
+import { Route as AppCodeRouteImport } from './routes/app.code'
+import { Route as AppChatRouteImport } from './routes/app.chat'
+import { Route as AppAnalyticsRouteImport } from './routes/app.analytics'
 
 const RegisterRoute = RegisterRouteImport.update({
   id: '/register',
@@ -34,37 +48,202 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AppIndexRoute = AppIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppUploadRoute = AppUploadRouteImport.update({
+  id: '/upload',
+  path: '/upload',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppSettingsRoute = AppSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppQuizRoute = AppQuizRouteImport.update({
+  id: '/quiz',
+  path: '/quiz',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppOcrRoute = AppOcrRouteImport.update({
+  id: '/ocr',
+  path: '/ocr',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppNotesRoute = AppNotesRouteImport.update({
+  id: '/notes',
+  path: '/notes',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppMcqsRoute = AppMcqsRouteImport.update({
+  id: '/mcqs',
+  path: '/mcqs',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppLibraryRoute = AppLibraryRouteImport.update({
+  id: '/library',
+  path: '/library',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppHistoryRoute = AppHistoryRouteImport.update({
+  id: '/history',
+  path: '/history',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppFormulasRoute = AppFormulasRouteImport.update({
+  id: '/formulas',
+  path: '/formulas',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppFlashcardsRoute = AppFlashcardsRouteImport.update({
+  id: '/flashcards',
+  path: '/flashcards',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppCodeRoute = AppCodeRouteImport.update({
+  id: '/code',
+  path: '/code',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppChatRoute = AppChatRouteImport.update({
+  id: '/chat',
+  path: '/chat',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppAnalyticsRoute = AppAnalyticsRouteImport.update({
+  id: '/analytics',
+  path: '/analytics',
+  getParentRoute: () => AppRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/app': typeof AppRoute
+  '/app': typeof AppRouteWithChildren
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
+  '/app/analytics': typeof AppAnalyticsRoute
+  '/app/chat': typeof AppChatRoute
+  '/app/code': typeof AppCodeRoute
+  '/app/flashcards': typeof AppFlashcardsRoute
+  '/app/formulas': typeof AppFormulasRoute
+  '/app/history': typeof AppHistoryRoute
+  '/app/library': typeof AppLibraryRoute
+  '/app/mcqs': typeof AppMcqsRoute
+  '/app/notes': typeof AppNotesRoute
+  '/app/ocr': typeof AppOcrRoute
+  '/app/quiz': typeof AppQuizRoute
+  '/app/settings': typeof AppSettingsRoute
+  '/app/upload': typeof AppUploadRoute
+  '/app/': typeof AppIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/app': typeof AppRoute
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
+  '/app/analytics': typeof AppAnalyticsRoute
+  '/app/chat': typeof AppChatRoute
+  '/app/code': typeof AppCodeRoute
+  '/app/flashcards': typeof AppFlashcardsRoute
+  '/app/formulas': typeof AppFormulasRoute
+  '/app/history': typeof AppHistoryRoute
+  '/app/library': typeof AppLibraryRoute
+  '/app/mcqs': typeof AppMcqsRoute
+  '/app/notes': typeof AppNotesRoute
+  '/app/ocr': typeof AppOcrRoute
+  '/app/quiz': typeof AppQuizRoute
+  '/app/settings': typeof AppSettingsRoute
+  '/app/upload': typeof AppUploadRoute
+  '/app': typeof AppIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/app': typeof AppRoute
+  '/app': typeof AppRouteWithChildren
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
+  '/app/analytics': typeof AppAnalyticsRoute
+  '/app/chat': typeof AppChatRoute
+  '/app/code': typeof AppCodeRoute
+  '/app/flashcards': typeof AppFlashcardsRoute
+  '/app/formulas': typeof AppFormulasRoute
+  '/app/history': typeof AppHistoryRoute
+  '/app/library': typeof AppLibraryRoute
+  '/app/mcqs': typeof AppMcqsRoute
+  '/app/notes': typeof AppNotesRoute
+  '/app/ocr': typeof AppOcrRoute
+  '/app/quiz': typeof AppQuizRoute
+  '/app/settings': typeof AppSettingsRoute
+  '/app/upload': typeof AppUploadRoute
+  '/app/': typeof AppIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/app' | '/login' | '/register'
+  fullPaths:
+    | '/'
+    | '/app'
+    | '/login'
+    | '/register'
+    | '/app/analytics'
+    | '/app/chat'
+    | '/app/code'
+    | '/app/flashcards'
+    | '/app/formulas'
+    | '/app/history'
+    | '/app/library'
+    | '/app/mcqs'
+    | '/app/notes'
+    | '/app/ocr'
+    | '/app/quiz'
+    | '/app/settings'
+    | '/app/upload'
+    | '/app/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/app' | '/login' | '/register'
-  id: '__root__' | '/' | '/app' | '/login' | '/register'
+  to:
+    | '/'
+    | '/login'
+    | '/register'
+    | '/app/analytics'
+    | '/app/chat'
+    | '/app/code'
+    | '/app/flashcards'
+    | '/app/formulas'
+    | '/app/history'
+    | '/app/library'
+    | '/app/mcqs'
+    | '/app/notes'
+    | '/app/ocr'
+    | '/app/quiz'
+    | '/app/settings'
+    | '/app/upload'
+    | '/app'
+  id:
+    | '__root__'
+    | '/'
+    | '/app'
+    | '/login'
+    | '/register'
+    | '/app/analytics'
+    | '/app/chat'
+    | '/app/code'
+    | '/app/flashcards'
+    | '/app/formulas'
+    | '/app/history'
+    | '/app/library'
+    | '/app/mcqs'
+    | '/app/notes'
+    | '/app/ocr'
+    | '/app/quiz'
+    | '/app/settings'
+    | '/app/upload'
+    | '/app/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  AppRoute: typeof AppRoute
+  AppRoute: typeof AppRouteWithChildren
   LoginRoute: typeof LoginRoute
   RegisterRoute: typeof RegisterRoute
 }
@@ -99,12 +278,146 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/app/': {
+      id: '/app/'
+      path: '/'
+      fullPath: '/app/'
+      preLoaderRoute: typeof AppIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/upload': {
+      id: '/app/upload'
+      path: '/upload'
+      fullPath: '/app/upload'
+      preLoaderRoute: typeof AppUploadRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/settings': {
+      id: '/app/settings'
+      path: '/settings'
+      fullPath: '/app/settings'
+      preLoaderRoute: typeof AppSettingsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/quiz': {
+      id: '/app/quiz'
+      path: '/quiz'
+      fullPath: '/app/quiz'
+      preLoaderRoute: typeof AppQuizRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/ocr': {
+      id: '/app/ocr'
+      path: '/ocr'
+      fullPath: '/app/ocr'
+      preLoaderRoute: typeof AppOcrRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/notes': {
+      id: '/app/notes'
+      path: '/notes'
+      fullPath: '/app/notes'
+      preLoaderRoute: typeof AppNotesRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/mcqs': {
+      id: '/app/mcqs'
+      path: '/mcqs'
+      fullPath: '/app/mcqs'
+      preLoaderRoute: typeof AppMcqsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/library': {
+      id: '/app/library'
+      path: '/library'
+      fullPath: '/app/library'
+      preLoaderRoute: typeof AppLibraryRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/history': {
+      id: '/app/history'
+      path: '/history'
+      fullPath: '/app/history'
+      preLoaderRoute: typeof AppHistoryRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/formulas': {
+      id: '/app/formulas'
+      path: '/formulas'
+      fullPath: '/app/formulas'
+      preLoaderRoute: typeof AppFormulasRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/flashcards': {
+      id: '/app/flashcards'
+      path: '/flashcards'
+      fullPath: '/app/flashcards'
+      preLoaderRoute: typeof AppFlashcardsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/code': {
+      id: '/app/code'
+      path: '/code'
+      fullPath: '/app/code'
+      preLoaderRoute: typeof AppCodeRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/chat': {
+      id: '/app/chat'
+      path: '/chat'
+      fullPath: '/app/chat'
+      preLoaderRoute: typeof AppChatRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/analytics': {
+      id: '/app/analytics'
+      path: '/analytics'
+      fullPath: '/app/analytics'
+      preLoaderRoute: typeof AppAnalyticsRouteImport
+      parentRoute: typeof AppRoute
+    }
   }
 }
 
+interface AppRouteChildren {
+  AppAnalyticsRoute: typeof AppAnalyticsRoute
+  AppChatRoute: typeof AppChatRoute
+  AppCodeRoute: typeof AppCodeRoute
+  AppFlashcardsRoute: typeof AppFlashcardsRoute
+  AppFormulasRoute: typeof AppFormulasRoute
+  AppHistoryRoute: typeof AppHistoryRoute
+  AppLibraryRoute: typeof AppLibraryRoute
+  AppMcqsRoute: typeof AppMcqsRoute
+  AppNotesRoute: typeof AppNotesRoute
+  AppOcrRoute: typeof AppOcrRoute
+  AppQuizRoute: typeof AppQuizRoute
+  AppSettingsRoute: typeof AppSettingsRoute
+  AppUploadRoute: typeof AppUploadRoute
+  AppIndexRoute: typeof AppIndexRoute
+}
+
+const AppRouteChildren: AppRouteChildren = {
+  AppAnalyticsRoute: AppAnalyticsRoute,
+  AppChatRoute: AppChatRoute,
+  AppCodeRoute: AppCodeRoute,
+  AppFlashcardsRoute: AppFlashcardsRoute,
+  AppFormulasRoute: AppFormulasRoute,
+  AppHistoryRoute: AppHistoryRoute,
+  AppLibraryRoute: AppLibraryRoute,
+  AppMcqsRoute: AppMcqsRoute,
+  AppNotesRoute: AppNotesRoute,
+  AppOcrRoute: AppOcrRoute,
+  AppQuizRoute: AppQuizRoute,
+  AppSettingsRoute: AppSettingsRoute,
+  AppUploadRoute: AppUploadRoute,
+  AppIndexRoute: AppIndexRoute,
+}
+
+const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  AppRoute: AppRoute,
+  AppRoute: AppRouteWithChildren,
   LoginRoute: LoginRoute,
   RegisterRoute: RegisterRoute,
 }
