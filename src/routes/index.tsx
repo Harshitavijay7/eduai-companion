@@ -431,7 +431,9 @@ function Landing() {
       <Nav />
       <Hero />
       <Stats />
+      <Marquee />
       <Features />
+
       <Roadmap />
       <About />
       <Pricing />
