@@ -120,7 +120,9 @@ function Hero() {
         </motion.div>
 
         <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.7, delay: 0.1 }} className="relative">
-          <div className="glass rounded-3xl p-6 shadow-2xl">
+          <div aria-hidden className="absolute -inset-1 rounded-3xl bg-gradient-to-tr from-brand via-brand-2 to-brand-accent opacity-40 blur-2xl animate-glow-pulse" />
+          <div className="relative glass rounded-3xl p-6 shadow-2xl animate-tilt">
+
             <div className="mb-4 flex items-center gap-2">
               <div className="h-2.5 w-2.5 rounded-full bg-red-400/70" />
               <div className="h-2.5 w-2.5 rounded-full bg-yellow-400/70" />
