@@ -191,7 +191,7 @@ function Stats() {
             transition={{ delay: i * 0.08 }}
             className="text-center"
           >
-            <div className="text-3xl font-bold gradient-text sm:text-4xl">{s.v}</div>
+            <div className="text-3xl font-bold gradient-text-animated sm:text-4xl">{s.v}</div>
             <div className="mt-1 text-xs uppercase tracking-widest text-muted-foreground">{s.l}</div>
           </motion.div>
         ))}
@@ -199,6 +199,25 @@ function Stats() {
     </section>
   );
 }
+
+function Marquee() {
+  const items = ["GATE", "NEET", "UPSC", "JEE", "CAT", "GRE", "IIT Delhi", "IIT Bombay", "BITS Pilani", "NIT Trichy", "IIIT Hyderabad"];
+  const row = [...items, ...items];
+  return (
+    <section aria-hidden className="relative overflow-hidden border-b border-border/40 py-6">
+      <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-24 bg-gradient-to-r from-background to-transparent" />
+      <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-24 bg-gradient-to-l from-background to-transparent" />
+      <div className="flex w-max animate-marquee gap-12 whitespace-nowrap">
+        {row.map((n, i) => (
+          <span key={i} className="text-sm font-semibold uppercase tracking-widest text-muted-foreground/70">
+            ★ {n}
+          </span>
+        ))}
+      </div>
+    </section>
+  );
+}
+
 
 function Features() {
   return (
