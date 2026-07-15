@@ -82,14 +82,21 @@ function Nav() {
 function Hero() {
   return (
     <section id="home" className="relative overflow-hidden hero-bg">
-      <div className="mx-auto grid max-w-7xl gap-12 px-4 py-20 sm:px-6 lg:grid-cols-2 lg:py-32">
+      {/* Animated background layers */}
+      <div aria-hidden className="pointer-events-none absolute inset-0 bg-grid mask-fade animate-grid-drift opacity-60" />
+      <div aria-hidden className="pointer-events-none absolute -left-32 top-10 h-96 w-96 rounded-full bg-brand/30 blur-3xl animate-blob" />
+      <div aria-hidden className="pointer-events-none absolute right-0 top-40 h-[28rem] w-[28rem] rounded-full bg-brand-accent/20 blur-3xl animate-float-x" />
+      <div aria-hidden className="pointer-events-none absolute bottom-0 left-1/2 h-80 w-[40rem] -translate-x-1/2 rounded-full bg-brand-2/25 blur-3xl animate-float-slow" />
+
+      <div className="relative mx-auto grid max-w-7xl gap-12 px-4 py-20 sm:px-6 lg:grid-cols-2 lg:py-32">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
-          <Badge className="mb-6 gap-1 border-brand/30 bg-brand/10 text-brand-accent" variant="outline">
+          <Badge className="mb-6 gap-1 border-brand/30 bg-brand/10 text-brand-accent animate-bob" variant="outline">
             <Sparkles className="h-3 w-3" /> Powered by advanced LLMs
           </Badge>
           <h1 className="text-4xl font-bold leading-[1.05] tracking-tight sm:text-6xl lg:text-7xl">
             Study Smarter,<br />
-            <span className="gradient-text">Not Harder.</span>
+            <span className="gradient-text-animated">Not Harder.</span>
+
           </h1>
           <p className="mt-6 max-w-xl text-lg text-muted-foreground">
             Upload PDFs, chat with your notes, generate MCQs, flashcards, summaries — and ace your exams with AI.
@@ -113,7 +120,9 @@ function Hero() {
         </motion.div>
 
         <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.7, delay: 0.1 }} className="relative">
-          <div className="glass rounded-3xl p-6 shadow-2xl">
+          <div aria-hidden className="absolute -inset-1 rounded-3xl bg-gradient-to-tr from-brand via-brand-2 to-brand-accent opacity-40 blur-2xl animate-glow-pulse" />
+          <div className="relative glass rounded-3xl p-6 shadow-2xl animate-tilt">
+
             <div className="mb-4 flex items-center gap-2">
               <div className="h-2.5 w-2.5 rounded-full bg-red-400/70" />
               <div className="h-2.5 w-2.5 rounded-full bg-yellow-400/70" />
@@ -182,7 +191,7 @@ function Stats() {
             transition={{ delay: i * 0.08 }}
             className="text-center"
           >
-            <div className="text-3xl font-bold gradient-text sm:text-4xl">{s.v}</div>
+            <div className="text-3xl font-bold gradient-text-animated sm:text-4xl">{s.v}</div>
             <div className="mt-1 text-xs uppercase tracking-widest text-muted-foreground">{s.l}</div>
           </motion.div>
         ))}
@@ -190,6 +199,25 @@ function Stats() {
     </section>
   );
 }
+
+function Marquee() {
+  const items = ["GATE", "NEET", "UPSC", "JEE", "CAT", "GRE", "IIT Delhi", "IIT Bombay", "BITS Pilani", "NIT Trichy", "IIIT Hyderabad"];
+  const row = [...items, ...items];
+  return (
+    <section aria-hidden className="relative overflow-hidden border-b border-border/40 py-6">
+      <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-24 bg-gradient-to-r from-background to-transparent" />
+      <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-24 bg-gradient-to-l from-background to-transparent" />
+      <div className="flex w-max animate-marquee gap-12 whitespace-nowrap">
+        {row.map((n, i) => (
+          <span key={i} className="text-sm font-semibold uppercase tracking-widest text-muted-foreground/70">
+            ★ {n}
+          </span>
+        ))}
+      </div>
+    </section>
+  );
+}
+
 
 function Features() {
   return (
@@ -201,9 +229,19 @@ function Features() {
       </div>
       <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
         {features.map((f, i) => (
-          <motion.div key={f.title} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.05 }}>
-            <Card className="glass group h-full p-6 transition hover:-translate-y-1 hover:glow">
-              <div className="mb-4 grid h-11 w-11 place-items-center rounded-xl gradient-bg">
+          <motion.div
+            key={f.title}
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-50px" }}
+            transition={{ delay: i * 0.06, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+            whileHover={{ y: -8 }}
+            className="group relative"
+          >
+            <div aria-hidden className="absolute -inset-px rounded-2xl bg-gradient-to-br from-brand/40 via-brand-accent/30 to-brand-2/40 opacity-0 blur-md transition-opacity duration-500 group-hover:opacity-100" />
+            <Card className="glass relative h-full overflow-hidden p-6 transition-all duration-500 group-hover:border-brand/40">
+              <div aria-hidden className="pointer-events-none absolute -right-10 -top-10 h-32 w-32 rounded-full bg-brand/20 blur-2xl opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+              <div className="mb-4 grid h-11 w-11 place-items-center rounded-xl gradient-bg transition-transform duration-500 group-hover:scale-110 group-hover:rotate-6">
                 <f.icon className="h-5 w-5 text-white" />
               </div>
               <h3 className="text-lg font-semibold">{f.title}</h3>
@@ -212,6 +250,7 @@ function Features() {
           </motion.div>
         ))}
       </div>
+
     </section>
   );
 }
@@ -392,7 +431,9 @@ function Landing() {
       <Nav />
       <Hero />
       <Stats />
+      <Marquee />
       <Features />
+
       <Roadmap />
       <About />
       <Pricing />
