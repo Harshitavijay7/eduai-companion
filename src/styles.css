@@ -174,3 +174,104 @@
 @utility glow {
   box-shadow: var(--shadow-glow);
 }
+
+/* ================= Aesthetic Animations ================= */
+@keyframes float-slow {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+  50% { transform: translate3d(0, -30px, 0) scale(1.05); }
+}
+@keyframes float-x {
+  0%, 100% { transform: translate3d(0, 0, 0); }
+  50% { transform: translate3d(30px, -20px, 0); }
+}
+@keyframes blob {
+  0%, 100% { border-radius: 42% 58% 63% 37% / 42% 45% 55% 58%; }
+  50% { border-radius: 58% 42% 37% 63% / 55% 58% 42% 45%; }
+}
+@keyframes gradient-shift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+@keyframes grid-drift {
+  0% { background-position: 0 0; }
+  100% { background-position: 60px 60px; }
+}
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+@keyframes tilt {
+  0%, 100% { transform: rotate(-1deg); }
+  50% { transform: rotate(1deg); }
+}
+@keyframes glow-pulse {
+  0%, 100% { box-shadow: 0 0 40px -10px oklch(0.58 0.24 293 / 0.5); }
+  50% { box-shadow: 0 0 80px -10px oklch(0.74 0.14 208 / 0.7); }
+}
+@keyframes spin-slow {
+  to { transform: rotate(360deg); }
+}
+@keyframes bob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+@utility animate-float-slow { animation: float-slow 9s ease-in-out infinite; }
+@utility animate-float-x { animation: float-x 11s ease-in-out infinite; }
+@utility animate-blob { animation: blob 14s ease-in-out infinite, float-slow 12s ease-in-out infinite; }
+@utility animate-tilt { animation: tilt 8s ease-in-out infinite; }
+@utility animate-glow-pulse { animation: glow-pulse 4s ease-in-out infinite; }
+@utility animate-spin-slow { animation: spin-slow 22s linear infinite; }
+@utility animate-bob { animation: bob 3.5s ease-in-out infinite; }
+@utility animate-marquee { animation: marquee 40s linear infinite; }
+@utility animate-grid-drift { animation: grid-drift 20s linear infinite; }
+
+@utility gradient-text-animated {
+  background: linear-gradient(90deg, oklch(0.58 0.24 293), oklch(0.74 0.14 208), oklch(0.55 0.23 271), oklch(0.58 0.24 293));
+  background-size: 300% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: gradient-shift 8s ease infinite;
+}
+
+@utility shimmer-text {
+  background: linear-gradient(90deg, transparent, oklch(1 0 0 / 0.6), transparent);
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  animation: shimmer 3s linear infinite;
+}
+
+@utility bg-grid {
+  background-image:
+    linear-gradient(oklch(1 0 0 / 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, oklch(1 0 0 / 0.04) 1px, transparent 1px);
+  background-size: 60px 60px;
+}
+
+@utility mask-fade {
+  mask-image: radial-gradient(ellipse at center, black 40%, transparent 75%);
+  -webkit-mask-image: radial-gradient(ellipse at center, black 40%, transparent 75%);
+}
+
+@utility card-hover {
+  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.5s;
+}
+@utility card-hover-hover {
+  transform: translateY(-6px);
+  box-shadow: 0 30px 60px -20px oklch(0.58 0.24 293 / 0.4);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
