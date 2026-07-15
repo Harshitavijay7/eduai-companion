@@ -82,14 +82,21 @@ function Nav() {
 function Hero() {
   return (
     <section id="home" className="relative overflow-hidden hero-bg">
-      <div className="mx-auto grid max-w-7xl gap-12 px-4 py-20 sm:px-6 lg:grid-cols-2 lg:py-32">
+      {/* Animated background layers */}
+      <div aria-hidden className="pointer-events-none absolute inset-0 bg-grid mask-fade animate-grid-drift opacity-60" />
+      <div aria-hidden className="pointer-events-none absolute -left-32 top-10 h-96 w-96 rounded-full bg-brand/30 blur-3xl animate-blob" />
+      <div aria-hidden className="pointer-events-none absolute right-0 top-40 h-[28rem] w-[28rem] rounded-full bg-brand-accent/20 blur-3xl animate-float-x" />
+      <div aria-hidden className="pointer-events-none absolute bottom-0 left-1/2 h-80 w-[40rem] -translate-x-1/2 rounded-full bg-brand-2/25 blur-3xl animate-float-slow" />
+
+      <div className="relative mx-auto grid max-w-7xl gap-12 px-4 py-20 sm:px-6 lg:grid-cols-2 lg:py-32">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
-          <Badge className="mb-6 gap-1 border-brand/30 bg-brand/10 text-brand-accent" variant="outline">
+          <Badge className="mb-6 gap-1 border-brand/30 bg-brand/10 text-brand-accent animate-bob" variant="outline">
             <Sparkles className="h-3 w-3" /> Powered by advanced LLMs
           </Badge>
           <h1 className="text-4xl font-bold leading-[1.05] tracking-tight sm:text-6xl lg:text-7xl">
             Study Smarter,<br />
-            <span className="gradient-text">Not Harder.</span>
+            <span className="gradient-text-animated">Not Harder.</span>
+
           </h1>
           <p className="mt-6 max-w-xl text-lg text-muted-foreground">
             Upload PDFs, chat with your notes, generate MCQs, flashcards, summaries — and ace your exams with AI.
