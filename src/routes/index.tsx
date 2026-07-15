@@ -210,9 +210,19 @@ function Features() {
       </div>
       <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
         {features.map((f, i) => (
-          <motion.div key={f.title} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.05 }}>
-            <Card className="glass group h-full p-6 transition hover:-translate-y-1 hover:glow">
-              <div className="mb-4 grid h-11 w-11 place-items-center rounded-xl gradient-bg">
+          <motion.div
+            key={f.title}
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-50px" }}
+            transition={{ delay: i * 0.06, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+            whileHover={{ y: -8 }}
+            className="group relative"
+          >
+            <div aria-hidden className="absolute -inset-px rounded-2xl bg-gradient-to-br from-brand/40 via-brand-accent/30 to-brand-2/40 opacity-0 blur-md transition-opacity duration-500 group-hover:opacity-100" />
+            <Card className="glass relative h-full overflow-hidden p-6 transition-all duration-500 group-hover:border-brand/40">
+              <div aria-hidden className="pointer-events-none absolute -right-10 -top-10 h-32 w-32 rounded-full bg-brand/20 blur-2xl opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+              <div className="mb-4 grid h-11 w-11 place-items-center rounded-xl gradient-bg transition-transform duration-500 group-hover:scale-110 group-hover:rotate-6">
                 <f.icon className="h-5 w-5 text-white" />
               </div>
               <h3 className="text-lg font-semibold">{f.title}</h3>
@@ -221,6 +231,7 @@ function Features() {
           </motion.div>
         ))}
       </div>
+
     </section>
   );
 }
