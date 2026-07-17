@@ -500,7 +500,7 @@ function MessageBubble({ msg }: { msg: Msg }) {
         {isUser ? (
           <div className="whitespace-pre-wrap">{msg.text}</div>
         ) : (
-          <div className="prose prose-sm dark:prose-invert max-w-none prose-p:my-2 prose-pre:my-2 prose-pre:rounded-lg prose-pre:bg-background/70 prose-code:text-brand-accent">
+          <div className="md-content max-w-none">
             <ReactMarkdown remarkPlugins={[remarkGfm]}>
               {msg.text || " "}
             </ReactMarkdown>
