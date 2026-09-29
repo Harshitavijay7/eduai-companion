@@ -1,7 +1,12 @@
 import axios from "axios";
 
-// Base URL for the FastAPI backend. Configure via VITE_API_URL.
-const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
+// Base URL for the existing Express backend. Override with VITE_API_URL when needed.
+const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+
+export type AskResponse = {
+  question: string;
+  answer: string;
+};
 
 export const api = axios.create({
   baseURL: BASE_URL,
@@ -28,8 +33,10 @@ export const IntelliLearnAPI = {
     fd.append("file", file);
     return api.post("/upload", fd, { headers: { "Content-Type": "multipart/form-data" } }).then((r) => r.data);
   },
-  ask: (question: string, docId?: string) =>
-    api.get("/ask", { params: { question, doc_id: docId } }).then((r) => r.data),
+  ask: (question: string, signal?: AbortSignal) =>
+    api
+      .post<AskResponse>("/ask", { question }, { signal })
+      .then((response) => response.data),
   notes: (docId: string, style: string) =>
     api.get("/notes", { params: { doc_id: docId, style } }).then((r) => r.data),
   mcq: (docId: string, count: number, difficulty: string) =>
