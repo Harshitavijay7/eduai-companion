@@ -16,10 +16,20 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { IntelliLearnAPI } from "@/lib/api";
 
 export const Route = createFileRoute("/app/chat")({
   component: Chat,
-  head: () => ({ meta: [{ title: "AI Chat — IntelliLearn AI" }] }),
+  head: () => ({
+    meta: [
+      { title: "AI Chat — IntelliLearn AI" },
+      { name: "description", content: "Ask questions and study with IntelliLearn AI's learning assistant." },
+      { property: "og:title", content: "AI Chat — IntelliLearn AI" },
+      { property: "og:description", content: "Ask questions and study with IntelliLearn AI's learning assistant." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
+    ],
+  }),
 });
 
 type Msg = {
@@ -44,22 +54,6 @@ const suggestionCards = [
   { title: "Compare concepts", subtitle: "Side-by-side breakdowns", prompt: "Compare supervised vs unsupervised learning in a table." },
 ];
 
-const aiSampleReply = (q: string) =>
-  `Here's a breakdown for **"${q}"**:
-
-- **Core idea** — this concept revolves around how models learn patterns from examples rather than being explicitly programmed.
-- **Where it shows up** — chapters 2 and 4 of your material cover the foundations, while chapter 6 dives into edge cases.
-- **Why it matters** — understanding this unlocks the intuition behind most modern ML systems.
-
-\`\`\`python
-# quick illustration
-def learn(data, labels):
-    model = fit(data, labels)
-    return model.predict
-\`\`\`
-
-Want me to generate **flashcards** or a **quiz** on this topic next?`;
-
 function Chat() {
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [activeId, setActiveId] = useState<string | null>(null);
@@ -72,7 +66,7 @@ function Chat() {
   const endRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const fileRef = useRef<HTMLInputElement>(null);
-  const streamAbort = useRef<{ cancelled: boolean } | null>(null);
+  const streamAbort = useRef<{ cancelled: boolean; controller?: AbortController } | null>(null);
 
   const active = conversations.find((c) => c.id === activeId) ?? null;
   const messages = active?.messages ?? [];
@@ -108,15 +102,11 @@ function Chat() {
     setConversations((prev) => prev.map((c) => (c.id === id ? { ...c, title: name } : c)));
   };
 
-  const streamAiReply = (convId: string, prompt: string) => {
-    const full = aiSampleReply(prompt);
+  const streamAiReply = (convId: string, full: string, token: { cancelled: boolean }) => {
     const aiId = crypto.randomUUID();
     setConversations((prev) => prev.map((c) => c.id === convId
       ? { ...c, messages: [...c.messages, { id: aiId, role: "ai", text: "", streaming: true }] }
       : c));
-    setStreaming(true);
-    streamAbort.current = { cancelled: false };
-    const token = streamAbort.current;
 
     const chunks = full.split(/(\s+)/);
     let i = 0;
@@ -126,6 +116,7 @@ function Chat() {
           ? { ...c, messages: c.messages.map((m) => m.id === aiId ? { ...m, streaming: false } : m) }
           : c));
         setStreaming(false);
+        streamAbort.current = null;
         return;
       }
       i += 1;
@@ -140,12 +131,13 @@ function Chat() {
           ? { ...c, messages: c.messages.map((m) => m.id === aiId ? { ...m, streaming: false } : m) }
           : c));
         setStreaming(false);
+        streamAbort.current = null;
       }
     };
     setTimeout(tick, 250);
   };
 
-  const send = (textArg?: string) => {
+  const send = async (textArg?: string) => {
     const value = (textArg ?? input).trim();
     if (!value || streaming) return;
 
@@ -171,11 +163,48 @@ function Chat() {
     }
     setInput("");
     setAttachment(null);
-    streamAiReply(convId, value);
+    setStreaming(true);
+
+    const controller = new AbortController();
+    const token = { cancelled: false, controller };
+    streamAbort.current = token;
+
+    try {
+      const data = await IntelliLearnAPI.ask(value, controller.signal);
+      if (token.cancelled) return;
+      if (!data || typeof data.answer !== "string" || !data.answer.trim()) {
+        throw new Error("The backend returned an empty answer.");
+      }
+      streamAiReply(convId, data.answer, token);
+    } catch (error) {
+      if (token.cancelled) {
+        setStreaming(false);
+        streamAbort.current = null;
+        return;
+      }
+
+      const message = "I couldn't reach the learning service. Please check that the backend is running and try again.";
+      setConversations((prev) => prev.map((conversation) => conversation.id === convId
+        ? {
+            ...conversation,
+            messages: [...conversation.messages, {
+              id: crypto.randomUUID(),
+              role: "ai",
+              text: message,
+            }],
+          }
+        : conversation));
+      setStreaming(false);
+      streamAbort.current = null;
+      toast.error(error instanceof Error ? error.message : "Unable to get an AI response.");
+    }
   };
 
   const stopStreaming = () => {
-    if (streamAbort.current) streamAbort.current.cancelled = true;
+    if (!streamAbort.current) return;
+    streamAbort.current.cancelled = true;
+    streamAbort.current.controller?.abort();
+    setStreaming(false);
   };
 
   const onFile = (f: File | null) => {
