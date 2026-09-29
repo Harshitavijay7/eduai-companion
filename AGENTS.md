@@ -8,3 +8,5 @@
 > Commits you push to the connected branch sync back to Lovable and show up in
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
+
+- The frontend API client defaults to the existing Express service at `http://localhost:5000`, with `VITE_API_URL` as the deployment override, so environment changes do not require UI edits.
