@@ -22,9 +22,26 @@ const docs = [
   { id: "6", name: "Compiler Design", subject: "Compilers", pages: 220, updated: "1 week ago", color: "from-pink-500 to-rose-500" },
 ];
 
+type LibDoc = { id: string; name: string; subject: string; pages?: number; size?: string; updated: string; color: string; stored?: boolean };
+
 function Library() {
   const [q, setQ] = useState("");
-  const filtered = docs.filter((d) => d.name.toLowerCase().includes(q.toLowerCase()));
+  const [stored, setStored] = useState<LibDoc[]>([]);
+  useEffect(() => {
+    setStored(
+      getStoredDocs().map((d) => ({
+        id: d.id,
+        name: d.name,
+        subject: d.subject,
+        size: d.size,
+        updated: new Date(d.uploadedAt).toLocaleDateString(),
+        color: d.color,
+        stored: true,
+      })),
+    );
+  }, []);
+  const all: LibDoc[] = [...stored, ...docs];
+  const filtered = all.filter((d) => d.name.toLowerCase().includes(q.toLowerCase()));
   return (
     <div>
       <PageHeader

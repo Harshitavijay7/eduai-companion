@@ -130,13 +130,13 @@ function UploadPage() {
                   </div>
                   <div className="mt-1 flex items-center gap-3 text-xs text-muted-foreground">
                     <span>{it.size}</span>
-                    <span>{it.done ? "Ready" : `${Math.round(it.progress)}%`}</span>
+                    {it.done ? <span>Ready</span> : <span className="inline-flex items-center gap-1"><Loader2 className="h-3 w-3 animate-spin" />Uploading…</span>}
                   </div>
-                  {!it.done && <Progress value={it.progress} className="mt-2 h-1.5" />}
+                  {!it.done && <Progress value={undefined} className="mt-2 h-1.5 animate-pulse" />}
                 </div>
                 <div className="flex items-center gap-1">
                   <Button size="icon" variant="ghost" title="Preview"><Eye className="h-4 w-4" /></Button>
-                  <Button size="icon" variant="ghost" title="Remove" onClick={() => setItems((p) => p.filter((x) => x.id !== it.id))}>
+                  <Button size="icon" variant="ghost" title="Remove" disabled={!it.done} onClick={() => { if (it.docId) removeStoredDoc(it.docId); setItems((p) => p.filter((x) => x.id !== it.id)); }}>
                     {it.done ? <Trash2 className="h-4 w-4" /> : <X className="h-4 w-4" />}
                   </Button>
                 </div>
