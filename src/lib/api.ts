@@ -1,7 +1,7 @@
 import axios from "axios";
 
-// Base URL for the existing Express backend. Override with VITE_API_URL when needed.
-const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+// Base URL for the deployed Render backend. Override with VITE_API_URL when needed.
+const BASE_URL = import.meta.env.VITE_API_URL || "https://smart-assistant-new-backed-2.onrender.com";
 
 export type AskResponse = {
   question: string;
