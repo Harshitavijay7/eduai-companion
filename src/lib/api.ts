@@ -8,6 +8,16 @@ export type AskResponse = {
   answer: string;
 };
 
+export type UploadResponse = {
+  success?: boolean;
+  message?: string;
+  fileName?: string;
+  fileUri?: string;
+  mimeType?: string;
+  displayName?: string;
+  state?: string;
+};
+
 export const api = axios.create({
   baseURL: BASE_URL,
   headers: { "Content-Type": "application/json" },
@@ -28,10 +38,21 @@ api.interceptors.request.use((config) => {
  */
 export const IntelliLearnAPI = {
   health: () => api.get("/").then((r) => r.data),
-  upload: (file: File) => {
-    const fd = new FormData();
-    fd.append("file", file);
-    return api.post("/upload", fd, { headers: { "Content-Type": "multipart/form-data" } }).then((r) => r.data);
+  // Uses fetch so the browser sets the multipart boundary automatically.
+  upload: async (file: File): Promise<UploadResponse> => {
+    const formData = new FormData();
+    formData.append("file", file);
+    const res = await fetch(`${BASE_URL}/upload`, { method: "POST", body: formData });
+    let data: UploadResponse | null = null;
+    try {
+      data = await res.json();
+    } catch {
+      data = null;
+    }
+    if (!res.ok || !data || data.success === false) {
+      throw new Error(data?.message || `Upload failed (${res.status})`);
+    }
+    return data;
   },
   ask: (question: string, signal?: AbortSignal) =>
     api
