@@ -10,3 +10,4 @@
 <!-- LOVABLE:END -->
 
 - The frontend API client defaults to the existing Express service at `http://localhost:5000`, with `VITE_API_URL` as the deployment override, so environment changes do not require UI edits.
+- The chat route uses its own viewport-height workspace instead of the shared app sidebar and top navigation, because duplicating that chrome obscures chat history and messages.

@@ -217,7 +217,7 @@ function Chat() {
     c.title.toLowerCase().includes(search.toLowerCase()));
 
   return (
-    <div className="fixed inset-0 top-14 flex bg-background">
+    <div className="flex h-full min-h-0 w-full overflow-hidden bg-background">
       {/* Sidebar */}
       <AnimatePresence>
         {sidebarOpen && (
@@ -231,7 +231,7 @@ function Chat() {
 
       <aside
         className={cn(
-          "fixed z-40 h-[calc(100vh-3.5rem)] w-72 shrink-0 border-r border-border/60 bg-sidebar/95 backdrop-blur-xl transition-transform lg:static lg:z-auto lg:translate-x-0",
+          "fixed inset-y-0 left-0 z-40 h-full w-72 shrink-0 border-r border-border/60 bg-sidebar/95 backdrop-blur-xl transition-transform lg:static lg:z-auto lg:translate-x-0",
           sidebarOpen ? "translate-x-0" : "-translate-x-full"
         )}
       >
@@ -324,7 +324,7 @@ function Chat() {
       </aside>
 
       {/* Main chat area */}
-      <div className="relative flex min-w-0 flex-1 flex-col">
+      <div className="relative flex min-h-0 min-w-0 flex-1 flex-col">
         {/* Header */}
         <header className="flex h-14 shrink-0 items-center justify-between border-b border-border/60 bg-background/80 px-3 backdrop-blur-xl sm:px-6">
           <div className="flex min-w-0 items-center gap-2">
@@ -352,7 +352,7 @@ function Chat() {
         </header>
 
         {/* Messages / Welcome */}
-        <div className="relative flex-1 overflow-hidden">
+        <div className="relative min-h-0 flex-1 overflow-hidden">
           <ScrollArea className="h-full">
             {messages.length === 0 ? (
               <Welcome onPick={(p) => send(p)} />

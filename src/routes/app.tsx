@@ -1,4 +1,4 @@
-import { createFileRoute, Outlet } from "@tanstack/react-router";
+import { createFileRoute, Outlet, useRouterState } from "@tanstack/react-router";
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
 import { TopNav } from "@/components/top-nav";
@@ -8,6 +8,12 @@ export const Route = createFileRoute("/app")({
 });
 
 function AppLayout() {
+  const isChat = useRouterState({ select: (state) => state.location.pathname === "/app/chat" });
+
+  if (isChat) {
+    return <main className="h-dvh min-h-0 w-full overflow-hidden bg-background"><Outlet /></main>;
+  }
+
   return (
     <SidebarProvider>
       <div className="flex min-h-screen w-full">
