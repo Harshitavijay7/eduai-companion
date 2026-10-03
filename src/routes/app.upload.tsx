@@ -1,5 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import { Loader2 } from "lucide-react";
+import { IntelliLearnAPI } from "@/lib/api";
+import { addStoredDoc, getStoredDocs, removeStoredDoc, type StoredDoc } from "@/lib/docs";
 import { motion, AnimatePresence } from "framer-motion";
 import { Upload as UploadIcon, FileText, X, Eye, Trash2, CheckCircle2 } from "lucide-react";
 import { Card } from "@/components/ui/card";
@@ -14,36 +17,66 @@ export const Route = createFileRoute("/app/upload")({
   head: () => ({ meta: [{ title: "Upload PDF — IntelliLearn AI" }] }),
 });
 
-type Item = { id: string; name: string; size: string; progress: number; done: boolean };
+type Item = { id: string; name: string; size: string; progress: number; done: boolean; docId?: string };
 
-const seed: Item[] = [
-  { id: "1", name: "Machine_Learning_Textbook.pdf", size: "12.4 MB", progress: 100, done: true },
-  { id: "2", name: "DBMS_Notes_Ch3.pdf", size: "3.1 MB", progress: 100, done: true },
-  { id: "3", name: "Operating_Systems.pdf", size: "8.7 MB", progress: 100, done: true },
+const MAX_BYTES = 50 * 1024 * 1024;
+const COLORS = [
+  "from-violet-500 to-fuchsia-500",
+  "from-cyan-500 to-blue-500",
+  "from-indigo-500 to-violet-500",
+  "from-emerald-500 to-teal-500",
+  "from-amber-500 to-orange-500",
+  "from-pink-500 to-rose-500",
 ];
 
 function UploadPage() {
   const [drag, setDrag] = useState(false);
-  const [items, setItems] = useState<Item[]>(seed);
+  const [items, setItems] = useState<Item[]>([]);
+
+  useEffect(() => {
+    setItems(
+      getStoredDocs().map((d) => ({ id: d.id, docId: d.id, name: d.displayName || d.name, size: d.size || "", progress: 100, done: true })),
+    );
+  }, []);
 
   const addFiles = useCallback((files: FileList | File[]) => {
-    const arr = Array.from(files).filter((f) => f.type === "application/pdf" || f.name.endsWith(".pdf"));
-    if (!arr.length) return toast.error("Please drop a PDF file.");
-    arr.forEach((f) => {
+    const all = Array.from(files);
+    const pdfs = all.filter((f) => f.type === "application/pdf" || f.name.toLowerCase().endsWith(".pdf"));
+    if (!pdfs.length) return toast.error("Please choose a PDF file.");
+    const arr = pdfs.filter((f) => {
+      if (f.size > MAX_BYTES) {
+        toast.error(`${f.name} is larger than 50 MB.`);
+        return false;
+      }
+      return true;
+    });
+    arr.forEach(async (f) => {
       const id = crypto.randomUUID();
-      const item: Item = { id, name: f.name, size: `${(f.size / 1024 / 1024).toFixed(1)} MB`, progress: 0, done: false };
-      setItems((prev) => [item, ...prev]);
-      // Simulated upload progress (frontend-only)
-      let p = 0;
-      const t = setInterval(() => {
-        p += Math.random() * 22;
-        setItems((prev) => prev.map((x) => (x.id === id ? { ...x, progress: Math.min(100, p) } : x)));
-        if (p >= 100) {
-          clearInterval(t);
-          setItems((prev) => prev.map((x) => (x.id === id ? { ...x, progress: 100, done: true } : x)));
-          toast.success(`${f.name} uploaded`);
-        }
-      }, 220);
+      const size = `${(f.size / 1024 / 1024).toFixed(1)} MB`;
+      setItems((prev) => [{ id, name: f.name, size, progress: 0, done: false }, ...prev]);
+      try {
+        const data = await IntelliLearnAPI.upload(f);
+        const doc: StoredDoc = {
+          id,
+          name: (data.displayName || f.name).replace(/\.pdf$/i, ""),
+          subject: "PDF",
+          size,
+          uploadedAt: new Date().toISOString(),
+          color: COLORS[Math.floor(Math.random() * COLORS.length)],
+          fileName: data.fileName,
+          fileUri: data.fileUri,
+          mimeType: data.mimeType,
+          displayName: data.displayName || f.name,
+          state: data.state,
+        };
+        addStoredDoc(doc);
+        setItems((prev) => prev.map((x) => (x.id === id ? { ...x, progress: 100, done: true, docId: id } : x)));
+        toast.success(`${f.name} uploaded`);
+      } catch (err) {
+        setItems((prev) => prev.filter((x) => x.id !== id));
+        const msg = err instanceof Error ? err.message : "Unknown error";
+        toast.error(`Couldn't upload ${f.name}. ${msg}`);
+      }
     });
   }, []);
 
