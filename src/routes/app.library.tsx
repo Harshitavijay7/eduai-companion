@@ -75,7 +75,7 @@ function Library() {
                   <span>· {d.updated}</span>
                 </div>
                 <div className="mt-4 flex gap-1.5">
-                  <Button asChild size="sm" className="h-8 flex-1 gradient-bg text-white"><Link to="/app/chat"><MessageSquare className="mr-1 h-3.5 w-3.5" />Chat</Link></Button>
+                  <Button asChild size="sm" className="h-8 flex-1 gradient-bg text-white"><a href={d.stored ? `/app/chat?doc=${encodeURIComponent(d.id)}` : "/app/chat"}><MessageSquare className="mr-1 h-3.5 w-3.5" />Chat</a></Button>
                   <Button asChild size="sm" variant="outline" className="h-8"><Link to="/app/flashcards"><Layers className="h-3.5 w-3.5" /></Link></Button>
                   <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => { if (d.stored) { removeStoredDoc(d.id); setStored((s) => s.filter((x) => x.id !== d.id)); } }}><Trash2 className="h-3.5 w-3.5" /></Button>
                 </div>
