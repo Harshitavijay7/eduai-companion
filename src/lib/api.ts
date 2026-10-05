@@ -54,9 +54,9 @@ export const IntelliLearnAPI = {
     }
     return data;
   },
-  ask: (question: string, signal?: AbortSignal) =>
+  ask: (question: string, signal?: AbortSignal, fileName?: string) =>
     api
-      .post<AskResponse>("/ask", { question }, { signal })
+      .post<AskResponse>("/ask", fileName ? { question, fileName } : { question }, { signal })
       .then((response) => response.data),
   notes: (docId: string, style: string) =>
     api.get("/notes", { params: { doc_id: docId, style } }).then((r) => r.data),

@@ -17,6 +17,7 @@ import {
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { IntelliLearnAPI } from "@/lib/api";
+import { getStoredDocs, type StoredDoc } from "@/lib/docs";
 
 export const Route = createFileRoute("/app/chat")({
   component: Chat,
@@ -62,6 +63,13 @@ function Chat() {
   const [streaming, setStreaming] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [search, setSearch] = useState("");
+  const [selectedPdf, setSelectedPdf] = useState<StoredDoc | null>(null);
+  useEffect(() => {
+    const docId = new URLSearchParams(window.location.search).get("doc");
+    if (!docId) return;
+    const doc = getStoredDocs().find((d) => d.id === docId);
+    if (doc?.fileName) setSelectedPdf(doc);
+  }, []);
 
   const endRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -170,7 +178,7 @@ function Chat() {
     streamAbort.current = token;
 
     try {
-      const data = await IntelliLearnAPI.ask(value, controller.signal);
+      const data = await IntelliLearnAPI.ask(value, controller.signal, selectedPdf?.fileName);
       if (token.cancelled) return;
       if (!data || typeof data.answer !== "string" || !data.answer.trim()) {
         throw new Error("The backend returned an empty answer.");
@@ -373,6 +381,19 @@ function Chat() {
         {/* Composer */}
         <div className="shrink-0 border-t border-border/60 bg-background/80 px-3 py-3 backdrop-blur-xl sm:px-6 sm:py-4">
           <div className="mx-auto max-w-3xl">
+            {selectedPdf && (
+              <div className="mb-2 flex items-center gap-2 rounded-lg border border-border bg-card/60 px-3 py-2 text-xs">
+                <FileText className="h-3.5 w-3.5 text-brand-accent" />
+                <span className="truncate font-medium">Asking about: {selectedPdf.displayName || selectedPdf.name}</span>
+                <button
+                  onClick={() => setSelectedPdf(null)}
+                  className="ml-auto grid h-5 w-5 place-items-center rounded hover:bg-accent"
+                  aria-label="Stop using this PDF"
+                >
+                  <X className="h-3 w-3" />
+                </button>
+              </div>
+            )}
             {attachment && (
               <div className="mb-2 flex items-center gap-2 rounded-lg border border-border bg-card/60 px-3 py-2 text-xs">
                 <FileText className="h-3.5 w-3.5 text-brand-accent" />
