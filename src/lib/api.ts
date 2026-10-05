@@ -58,8 +58,10 @@ export const IntelliLearnAPI = {
     api
       .post<AskResponse>("/ask", fileName ? { question, fileName } : { question }, { signal })
       .then((response) => response.data),
-  notes: (docId: string, style: string) =>
-    api.get("/notes", { params: { doc_id: docId, style } }).then((r) => r.data),
+  notes: (fileName: string) =>
+    api
+      .post<{ success?: boolean; fileName?: string; notes?: string; message?: string }>("/notes", { fileName })
+      .then((r) => r.data),
   mcq: (docId: string, count: number, difficulty: string) =>
     api.get("/mcq", { params: { doc_id: docId, count, difficulty } }).then((r) => r.data),
   flashcards: (docId: string) => api.get("/flashcards", { params: { doc_id: docId } }).then((r) => r.data),
