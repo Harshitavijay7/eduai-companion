@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { getStoredDocs, removeStoredDoc } from "@/lib/docs";
 import { motion } from "framer-motion";
-import { Library as LibIcon, Search, FileText, MessageSquare, Layers, Trash2, MoreHorizontal } from "lucide-react";
+import { Library as LibIcon, Search, FileText, MessageSquare, Layers, Trash2, MoreHorizontal, NotebookPen } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -23,7 +23,7 @@ const docs = [
   { id: "6", name: "Compiler Design", subject: "Compilers", pages: 220, updated: "1 week ago", color: "from-pink-500 to-rose-500" },
 ];
 
-type LibDoc = { id: string; name: string; subject: string; pages?: number; size?: string; updated: string; color: string; stored?: boolean };
+type LibDoc = { id: string; name: string; subject: string; pages?: number; size?: string; updated: string; color: string; stored?: boolean; fileName?: string };
 
 function Library() {
   const [q, setQ] = useState("");
@@ -38,6 +38,7 @@ function Library() {
         updated: new Date(d.uploadedAt).toLocaleDateString(),
         color: d.color,
         stored: true,
+        fileName: d.fileName,
       })),
     );
   }, []);
@@ -76,6 +77,9 @@ function Library() {
                 </div>
                 <div className="mt-4 flex gap-1.5">
                   <Button asChild size="sm" className="h-8 flex-1 gradient-bg text-white"><a href={d.stored ? `/app/chat?doc=${encodeURIComponent(d.id)}` : "/app/chat"}><MessageSquare className="mr-1 h-3.5 w-3.5" />Chat</a></Button>
+                  {d.fileName && (
+                    <Button asChild size="sm" variant="outline" className="h-8" title="Generate Notes"><a href={`/app/notes?doc=${encodeURIComponent(d.id)}`}><NotebookPen className="mr-1 h-3.5 w-3.5" />Notes</a></Button>
+                  )}
                   <Button asChild size="sm" variant="outline" className="h-8"><Link to="/app/flashcards"><Layers className="h-3.5 w-3.5" /></Link></Button>
                   <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => { if (d.stored) { removeStoredDoc(d.id); setStored((s) => s.filter((x) => x.id !== d.id)); } }}><Trash2 className="h-3.5 w-3.5" /></Button>
                 </div>

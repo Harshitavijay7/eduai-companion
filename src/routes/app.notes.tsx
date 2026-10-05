@@ -1,57 +1,68 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { FileText, Copy, Download, Share2, Sparkles } from "lucide-react";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import { FileText, Copy, Sparkles, RefreshCw, Loader2, AlertCircle, Upload } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { PageHeader } from "@/components/page-header";
+import { IntelliLearnAPI } from "@/lib/api";
+import { getStoredDocs, type StoredDoc } from "@/lib/docs";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/app/notes")({
   component: Notes,
-  head: () => ({ meta: [{ title: "AI Notes — IntelliLearn AI" }] }),
+  head: () => ({
+    meta: [
+      { title: "AI Notes — IntelliLearn AI" },
+      { name: "description", content: "Generate clear study notes from your uploaded PDFs." },
+      { property: "og:title", content: "AI Notes — IntelliLearn AI" },
+      { property: "og:description", content: "Generate clear study notes from your uploaded PDFs." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
+    ],
+  }),
 });
 
-const styles = [
-  { v: "short", l: "Short Notes", d: "Concise bullet points" },
-  { v: "detailed", l: "Detailed Notes", d: "In-depth explanations" },
-  { v: "revision", l: "Revision Notes", d: "Perfect for last-minute prep" },
-  { v: "exam", l: "Exam Notes", d: "Structured for exam answers" },
-];
-
-const sampleNote = `# Backpropagation — Revision Notes
-
-## Core Idea
-Backpropagation efficiently computes the gradient of the loss function with respect to every weight in the network by applying the chain rule.
-
-## Steps
-1. **Forward pass** — compute predictions and loss.
-2. **Backward pass** — propagate error signals backward through the network.
-3. **Update** — adjust weights using an optimizer (SGD, Adam).
-
-## Key Formulas
-- Chain rule: ∂L/∂w = ∂L/∂y · ∂y/∂z · ∂z/∂w
-- Weight update: w ← w − η · ∂L/∂w
-
-## Common Pitfalls
-- **Vanishing gradients** in deep networks with sigmoid activations
-- Use **ReLU** and **batch normalization** to stabilize
-- **Learning rate** too high → divergence; too low → slow training
-
-## Exam Tip
-Always mention the chain rule and give the weight-update formula.`;
-
 function Notes() {
-  const [style, setStyle] = useState("revision");
-  const [doc, setDoc] = useState("ml");
+  const [docs, setDocs] = useState<StoredDoc[]>([]);
+  const [docId, setDocId] = useState<string>("");
   const [loading, setLoading] = useState(false);
-  const [output, setOutput] = useState(sampleNote);
+  const [error, setError] = useState<string | null>(null);
+  const [notes, setNotes] = useState<Record<string, string>>({});
 
-  const generate = () => {
+  useEffect(() => {
+    const ready = getStoredDocs().filter((d) => d.fileName);
+    setDocs(ready);
+    const fromUrl = new URLSearchParams(window.location.search).get("doc");
+    const initial = ready.find((d) => d.id === fromUrl) ?? ready[0];
+    if (initial) setDocId(initial.id);
+  }, []);
+
+  const doc = docs.find((d) => d.id === docId);
+  const output = doc ? notes[doc.id] : undefined;
+
+  const generate = async () => {
+    if (!doc?.fileName) return;
     setLoading(true);
-    setTimeout(() => { setOutput(sampleNote); setLoading(false); toast.success("Notes generated"); }, 900);
+    setError(null);
+    try {
+      const data = await IntelliLearnAPI.notes(doc.fileName);
+      if (data.success === false || typeof data.notes !== "string" || !data.notes.trim()) {
+        throw new Error(data.message || "The server didn't return any notes.");
+      }
+      setNotes((n) => ({ ...n, [doc.id]: data.notes as string }));
+      toast.success("Notes generated");
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "Unknown error";
+      setError(`Couldn't generate notes. ${msg}`);
+      toast.error("Couldn't generate notes");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -59,53 +70,77 @@ function Notes() {
       <PageHeader title="AI Notes" subtitle="Turn any PDF into perfectly structured notes." icon={FileText} />
 
       <Card className="glass mb-6 p-6">
-        <div className="grid gap-4 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto] md:items-end">
+        <div className="grid gap-4 md:grid-cols-[minmax(0,1fr)_auto] md:items-end">
           <div>
             <div className="mb-1.5 text-sm font-medium">Source Document</div>
-            <Select value={doc} onValueChange={setDoc}>
-              <SelectTrigger className="bg-card/40"><SelectValue /></SelectTrigger>
+            <Select value={docId} onValueChange={(v) => { setDocId(v); setError(null); }} disabled={!docs.length || loading}>
+              <SelectTrigger className="bg-card/40">
+                <SelectValue placeholder={docs.length ? "Choose a PDF" : "No uploaded PDFs ready yet"} />
+              </SelectTrigger>
               <SelectContent>
-                <SelectItem value="ml">Machine Learning Textbook</SelectItem>
-                <SelectItem value="dbms">DBMS Complete Notes</SelectItem>
-                <SelectItem value="os">Operating Systems</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          <div>
-            <div className="mb-1.5 text-sm font-medium">Style</div>
-            <Select value={style} onValueChange={setStyle}>
-              <SelectTrigger className="bg-card/40"><SelectValue /></SelectTrigger>
-              <SelectContent>
-                {styles.map((s) => (
-                  <SelectItem key={s.v} value={s.v}>
-                    <div className="flex flex-col"><span>{s.l}</span><span className="text-xs text-muted-foreground">{s.d}</span></div>
-                  </SelectItem>
+                {docs.map((d) => (
+                  <SelectItem key={d.id} value={d.id}>{d.displayName || d.name}</SelectItem>
                 ))}
               </SelectContent>
             </Select>
           </div>
-          <Button className="gradient-bg text-white glow" onClick={generate} disabled={loading}>
-            <Sparkles className="mr-1 h-4 w-4" />{loading ? "Generating…" : "Generate"}
+          <Button className="gradient-bg text-white glow" onClick={generate} disabled={!doc || loading}>
+            {loading ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : output ? <RefreshCw className="mr-1 h-4 w-4" /> : <Sparkles className="mr-1 h-4 w-4" />}
+            {loading ? "Generating…" : output ? "Regenerate Notes" : "Generate Notes"}
           </Button>
         </div>
       </Card>
 
+      {error && (
+        <Card className="mb-6 flex items-start gap-3 border-destructive/50 bg-destructive/10 p-4 text-sm">
+          <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-destructive" />
+          <div className="flex-1">{error}</div>
+          <Button size="sm" variant="outline" onClick={generate} disabled={loading}>Try again</Button>
+        </Card>
+      )}
+
       <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
         <Card className="glass p-6">
-          <div className="mb-4 flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Badge className="gradient-bg text-white">{styles.find((s) => s.v === style)?.l}</Badge>
-              <span className="text-xs text-muted-foreground">Generated · just now</span>
+          {loading ? (
+            <div className="flex flex-col items-center justify-center gap-3 py-16 text-center">
+              <Loader2 className="h-8 w-8 animate-spin text-brand-accent" />
+              <div className="font-medium">Reading your PDF and writing notes…</div>
+              <div className="text-sm text-muted-foreground">This can take up to a minute for long documents.</div>
             </div>
-            <div className="flex gap-1">
-              <Button size="sm" variant="outline" onClick={() => { navigator.clipboard.writeText(output); toast.success("Copied"); }}><Copy className="mr-1 h-3.5 w-3.5" />Copy</Button>
-              <Button size="sm" variant="outline"><Download className="mr-1 h-3.5 w-3.5" />Download</Button>
-              <Button size="sm" variant="outline"><Share2 className="mr-1 h-3.5 w-3.5" />Share</Button>
+          ) : output ? (
+            <>
+              <div className="mb-4 flex items-center justify-between gap-2">
+                <div className="flex min-w-0 items-center gap-2">
+                  <Badge className="gradient-bg text-white">Study Notes</Badge>
+                  <span className="truncate text-xs text-muted-foreground">{doc?.displayName || doc?.name}</span>
+                </div>
+                <Button size="sm" variant="outline" onClick={() => { navigator.clipboard.writeText(output); toast.success("Copied"); }}>
+                  <Copy className="mr-1 h-3.5 w-3.5" />Copy
+                </Button>
+              </div>
+              <div className="md-content rounded-xl border border-border/60 bg-card/30 p-6 text-[0.95rem]">
+                <ReactMarkdown remarkPlugins={[remarkGfm]}>{output}</ReactMarkdown>
+              </div>
+            </>
+          ) : (
+            <div className="flex flex-col items-center justify-center gap-3 py-16 text-center">
+              <div className="grid h-14 w-14 place-items-center rounded-2xl gradient-bg glow">
+                <FileText className="h-6 w-6 text-white" />
+              </div>
+              {docs.length ? (
+                <>
+                  <div className="font-semibold">No notes yet</div>
+                  <p className="max-w-sm text-sm text-muted-foreground">Pick a PDF above and click Generate Notes to get clear, revision-ready study notes.</p>
+                </>
+              ) : (
+                <>
+                  <div className="font-semibold">Upload a PDF to get started</div>
+                  <p className="max-w-sm text-sm text-muted-foreground">Notes can be made from PDFs you upload. Older uploads may need to be uploaded again.</p>
+                  <Button asChild variant="outline" size="sm"><Link to="/app/upload"><Upload className="mr-1 h-3.5 w-3.5" />Upload PDF</Link></Button>
+                </>
+              )}
             </div>
-          </div>
-          <div className="prose prose-invert max-w-none rounded-xl border border-border/60 bg-card/30 p-6">
-            <pre className="whitespace-pre-wrap font-sans text-sm leading-relaxed">{output}</pre>
-          </div>
+          )}
         </Card>
       </motion.div>
     </div>
