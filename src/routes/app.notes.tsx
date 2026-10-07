@@ -46,19 +46,18 @@ function Notes() {
   const output = doc ? notes[doc.id] : undefined;
 
   const generate = async () => {
-    if (!doc?.fileName) return;
+    if (!doc?.fileName || loading) return;
     setLoading(true);
     setError(null);
     try {
       const data = await IntelliLearnAPI.notes(doc.fileName);
       if (data.success === false || typeof data.notes !== "string" || !data.notes.trim()) {
-        throw new Error(data.message || "The server didn't return any notes.");
+        throw new Error(data.message || "empty");
       }
       setNotes((n) => ({ ...n, [doc.id]: data.notes as string }));
       toast.success("Notes generated");
     } catch (err) {
-      const msg = err instanceof Error ? err.message : "Unknown error";
-      setError(`Couldn't generate notes. ${msg}`);
+      setError(friendlyAIError(err));
       toast.error("Couldn't generate notes");
     } finally {
       setLoading(false);
