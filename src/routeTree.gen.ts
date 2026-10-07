@@ -9,33 +9,28 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as RegisterRouteImport } from './routes/register'
-import { Route as LoginRouteImport } from './routes/login'
-import { Route as AppRouteImport } from './routes/app'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AppRouteImport } from './routes/app'
+import { Route as LoginRouteImport } from './routes/login'
+import { Route as RegisterRouteImport } from './routes/register'
 import { Route as AppIndexRouteImport } from './routes/app.index'
-import { Route as AppUploadRouteImport } from './routes/app.upload'
-import { Route as AppSettingsRouteImport } from './routes/app.settings'
-import { Route as AppQuizRouteImport } from './routes/app.quiz'
-import { Route as AppOcrRouteImport } from './routes/app.ocr'
-import { Route as AppNotesRouteImport } from './routes/app.notes'
-import { Route as AppMcqsRouteImport } from './routes/app.mcqs'
-import { Route as AppLibraryRouteImport } from './routes/app.library'
-import { Route as AppHistoryRouteImport } from './routes/app.history'
-import { Route as AppFormulasRouteImport } from './routes/app.formulas'
-import { Route as AppFlashcardsRouteImport } from './routes/app.flashcards'
-import { Route as AppCodeRouteImport } from './routes/app.code'
-import { Route as AppChatRouteImport } from './routes/app.chat'
 import { Route as AppAnalyticsRouteImport } from './routes/app.analytics'
+import { Route as AppChatRouteImport } from './routes/app.chat'
+import { Route as AppCodeRouteImport } from './routes/app.code'
+import { Route as AppFlashcardsRouteImport } from './routes/app.flashcards'
+import { Route as AppFormulasRouteImport } from './routes/app.formulas'
+import { Route as AppHistoryRouteImport } from './routes/app.history'
+import { Route as AppLibraryRouteImport } from './routes/app.library'
+import { Route as AppMcqsRouteImport } from './routes/app.mcqs'
+import { Route as AppNotesRouteImport } from './routes/app.notes'
+import { Route as AppOcrRouteImport } from './routes/app.ocr'
+import { Route as AppQuizRouteImport } from './routes/app.quiz'
+import { Route as AppSettingsRouteImport } from './routes/app.settings'
+import { Route as AppUploadRouteImport } from './routes/app.upload'
 
-const RegisterRoute = RegisterRouteImport.update({
-  id: '/register',
-  path: '/register',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const LoginRoute = LoginRouteImport.update({
-  id: '/login',
-  path: '/login',
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AppRoute = AppRouteImport.update({
@@ -43,9 +38,14 @@ const AppRoute = AppRouteImport.update({
   path: '/app',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RegisterRoute = RegisterRouteImport.update({
+  id: '/register',
+  path: '/register',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AppIndexRoute = AppIndexRouteImport.update({
@@ -53,59 +53,9 @@ const AppIndexRoute = AppIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AppRoute,
 } as any)
-const AppUploadRoute = AppUploadRouteImport.update({
-  id: '/upload',
-  path: '/upload',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppSettingsRoute = AppSettingsRouteImport.update({
-  id: '/settings',
-  path: '/settings',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppQuizRoute = AppQuizRouteImport.update({
-  id: '/quiz',
-  path: '/quiz',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppOcrRoute = AppOcrRouteImport.update({
-  id: '/ocr',
-  path: '/ocr',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppNotesRoute = AppNotesRouteImport.update({
-  id: '/notes',
-  path: '/notes',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppMcqsRoute = AppMcqsRouteImport.update({
-  id: '/mcqs',
-  path: '/mcqs',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppLibraryRoute = AppLibraryRouteImport.update({
-  id: '/library',
-  path: '/library',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppHistoryRoute = AppHistoryRouteImport.update({
-  id: '/history',
-  path: '/history',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppFormulasRoute = AppFormulasRouteImport.update({
-  id: '/formulas',
-  path: '/formulas',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppFlashcardsRoute = AppFlashcardsRouteImport.update({
-  id: '/flashcards',
-  path: '/flashcards',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppCodeRoute = AppCodeRouteImport.update({
-  id: '/code',
-  path: '/code',
+const AppAnalyticsRoute = AppAnalyticsRouteImport.update({
+  id: '/analytics',
+  path: '/analytics',
   getParentRoute: () => AppRoute,
 } as any)
 const AppChatRoute = AppChatRouteImport.update({
@@ -113,9 +63,59 @@ const AppChatRoute = AppChatRouteImport.update({
   path: '/chat',
   getParentRoute: () => AppRoute,
 } as any)
-const AppAnalyticsRoute = AppAnalyticsRouteImport.update({
-  id: '/analytics',
-  path: '/analytics',
+const AppCodeRoute = AppCodeRouteImport.update({
+  id: '/code',
+  path: '/code',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppFlashcardsRoute = AppFlashcardsRouteImport.update({
+  id: '/flashcards',
+  path: '/flashcards',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppFormulasRoute = AppFormulasRouteImport.update({
+  id: '/formulas',
+  path: '/formulas',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppHistoryRoute = AppHistoryRouteImport.update({
+  id: '/history',
+  path: '/history',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppLibraryRoute = AppLibraryRouteImport.update({
+  id: '/library',
+  path: '/library',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppMcqsRoute = AppMcqsRouteImport.update({
+  id: '/mcqs',
+  path: '/mcqs',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppNotesRoute = AppNotesRouteImport.update({
+  id: '/notes',
+  path: '/notes',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppOcrRoute = AppOcrRouteImport.update({
+  id: '/ocr',
+  path: '/ocr',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppQuizRoute = AppQuizRouteImport.update({
+  id: '/quiz',
+  path: '/quiz',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppSettingsRoute = AppSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppUploadRoute = AppUploadRouteImport.update({
+  id: '/upload',
+  path: '/upload',
   getParentRoute: () => AppRoute,
 } as any)
 
@@ -250,18 +250,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/register': {
-      id: '/register'
-      path: '/register'
-      fullPath: '/register'
-      preLoaderRoute: typeof RegisterRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/login': {
-      id: '/login'
-      path: '/login'
-      fullPath: '/login'
-      preLoaderRoute: typeof LoginRouteImport
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/app': {
@@ -271,11 +264,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/register': {
+      id: '/register'
+      path: '/register'
+      fullPath: '/register'
+      preLoaderRoute: typeof RegisterRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/app/': {
@@ -285,81 +285,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppIndexRouteImport
       parentRoute: typeof AppRoute
     }
-    '/app/upload': {
-      id: '/app/upload'
-      path: '/upload'
-      fullPath: '/app/upload'
-      preLoaderRoute: typeof AppUploadRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/app/settings': {
-      id: '/app/settings'
-      path: '/settings'
-      fullPath: '/app/settings'
-      preLoaderRoute: typeof AppSettingsRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/app/quiz': {
-      id: '/app/quiz'
-      path: '/quiz'
-      fullPath: '/app/quiz'
-      preLoaderRoute: typeof AppQuizRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/app/ocr': {
-      id: '/app/ocr'
-      path: '/ocr'
-      fullPath: '/app/ocr'
-      preLoaderRoute: typeof AppOcrRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/app/notes': {
-      id: '/app/notes'
-      path: '/notes'
-      fullPath: '/app/notes'
-      preLoaderRoute: typeof AppNotesRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/app/mcqs': {
-      id: '/app/mcqs'
-      path: '/mcqs'
-      fullPath: '/app/mcqs'
-      preLoaderRoute: typeof AppMcqsRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/app/library': {
-      id: '/app/library'
-      path: '/library'
-      fullPath: '/app/library'
-      preLoaderRoute: typeof AppLibraryRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/app/history': {
-      id: '/app/history'
-      path: '/history'
-      fullPath: '/app/history'
-      preLoaderRoute: typeof AppHistoryRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/app/formulas': {
-      id: '/app/formulas'
-      path: '/formulas'
-      fullPath: '/app/formulas'
-      preLoaderRoute: typeof AppFormulasRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/app/flashcards': {
-      id: '/app/flashcards'
-      path: '/flashcards'
-      fullPath: '/app/flashcards'
-      preLoaderRoute: typeof AppFlashcardsRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/app/code': {
-      id: '/app/code'
-      path: '/code'
-      fullPath: '/app/code'
-      preLoaderRoute: typeof AppCodeRouteImport
+    '/app/analytics': {
+      id: '/app/analytics'
+      path: '/analytics'
+      fullPath: '/app/analytics'
+      preLoaderRoute: typeof AppAnalyticsRouteImport
       parentRoute: typeof AppRoute
     }
     '/app/chat': {
@@ -369,11 +299,81 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppChatRouteImport
       parentRoute: typeof AppRoute
     }
-    '/app/analytics': {
-      id: '/app/analytics'
-      path: '/analytics'
-      fullPath: '/app/analytics'
-      preLoaderRoute: typeof AppAnalyticsRouteImport
+    '/app/code': {
+      id: '/app/code'
+      path: '/code'
+      fullPath: '/app/code'
+      preLoaderRoute: typeof AppCodeRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/flashcards': {
+      id: '/app/flashcards'
+      path: '/flashcards'
+      fullPath: '/app/flashcards'
+      preLoaderRoute: typeof AppFlashcardsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/formulas': {
+      id: '/app/formulas'
+      path: '/formulas'
+      fullPath: '/app/formulas'
+      preLoaderRoute: typeof AppFormulasRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/history': {
+      id: '/app/history'
+      path: '/history'
+      fullPath: '/app/history'
+      preLoaderRoute: typeof AppHistoryRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/library': {
+      id: '/app/library'
+      path: '/library'
+      fullPath: '/app/library'
+      preLoaderRoute: typeof AppLibraryRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/mcqs': {
+      id: '/app/mcqs'
+      path: '/mcqs'
+      fullPath: '/app/mcqs'
+      preLoaderRoute: typeof AppMcqsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/notes': {
+      id: '/app/notes'
+      path: '/notes'
+      fullPath: '/app/notes'
+      preLoaderRoute: typeof AppNotesRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/ocr': {
+      id: '/app/ocr'
+      path: '/ocr'
+      fullPath: '/app/ocr'
+      preLoaderRoute: typeof AppOcrRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/quiz': {
+      id: '/app/quiz'
+      path: '/quiz'
+      fullPath: '/app/quiz'
+      preLoaderRoute: typeof AppQuizRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/settings': {
+      id: '/app/settings'
+      path: '/settings'
+      fullPath: '/app/settings'
+      preLoaderRoute: typeof AppSettingsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/upload': {
+      id: '/app/upload'
+      path: '/upload'
+      fullPath: '/app/upload'
+      preLoaderRoute: typeof AppUploadRouteImport
       parentRoute: typeof AppRoute
     }
   }
