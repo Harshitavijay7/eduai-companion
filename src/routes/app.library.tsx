@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { getStoredDocs, removeStoredDoc } from "@/lib/docs";
 import { motion } from "framer-motion";
