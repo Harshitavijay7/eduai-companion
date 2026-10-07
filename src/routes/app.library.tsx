@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { getStoredDocs, removeStoredDoc } from "@/lib/docs";
 import { motion } from "framer-motion";
-import { Library as LibIcon, Search, FileText, MessageSquare, Layers, Trash2, MoreHorizontal, NotebookPen } from "lucide-react";
+import { Library as LibIcon, Search, FileText, MessageSquare, Layers, Trash2, MoreHorizontal, NotebookPen, ListChecks } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
