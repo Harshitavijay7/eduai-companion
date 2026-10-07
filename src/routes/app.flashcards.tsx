@@ -1,95 +1,142 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { Layers, ChevronLeft, ChevronRight, Shuffle, Download, RotateCcw } from "lucide-react";
+import { motion } from "framer-motion";
+import { Layers, Sparkles, Loader2, AlertCircle, RefreshCw, RotateCcw, ChevronLeft, ChevronRight, Repeat } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { Badge } from "@/components/ui/badge";
 import { PageHeader } from "@/components/page-header";
+import { PdfSelect, UploadPrompt, useReadyDocs } from "@/components/pdf-picker";
+import { IntelliLearnAPI } from "@/lib/api";
+import { friendlyAIError, pickArray } from "@/lib/ai-errors";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/app/flashcards")({
   component: Flashcards,
-  head: () => ({ meta: [{ title: "Flashcards — IntelliLearn AI" }] }),
+  head: () => ({
+    meta: [
+      { title: "Flashcards — IntelliLearn AI" },
+      { name: "description", content: "Revise with 10 AI-generated flashcards from your PDF." },
+      { property: "og:title", content: "Flashcards — IntelliLearn AI" },
+      { property: "og:description", content: "Revise with 10 AI-generated flashcards from your PDF." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
+    ],
+  }),
 });
 
-const initial = [
-  { front: "What is backpropagation?", back: "An algorithm that uses the chain rule to compute gradients of the loss w.r.t. every weight, enabling efficient training." },
-  { front: "Define overfitting.", back: "When a model learns training data too well — including noise — and fails to generalize to new data." },
-  { front: "What is a CNN?", back: "A Convolutional Neural Network — designed for grid-like data (images) using convolutional and pooling layers." },
-  { front: "Difference: precision vs recall?", back: "Precision = TP/(TP+FP). Recall = TP/(TP+FN). Precision cares about false positives; recall about false negatives." },
-  { front: "What does gradient descent do?", back: "Iteratively moves weights in the direction opposite to the gradient of the loss to minimize it." },
-];
+type FC = { front: string; back: string };
+
+function normalize(data: unknown): FC[] {
+  return pickArray(data, ["flashcards", "cards", "data"])
+    .map((raw) => {
+      const c = raw as Record<string, unknown>;
+      return { front: String(c.front ?? c.question ?? c.term ?? ""), back: String(c.back ?? c.answer ?? c.definition ?? "") };
+    })
+    .filter((c) => c.front && c.back);
+}
 
 function Flashcards() {
-  const [cards, setCards] = useState(initial);
-  const [idx, setIdx] = useState(0);
+  const { docs, docId, setDocId, doc } = useReadyDocs();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [cards, setCards] = useState<FC[]>([]);
+  const [index, setIndex] = useState(0);
   const [flipped, setFlipped] = useState(false);
 
-  const next = () => { setFlipped(false); setIdx((i) => (i + 1) % cards.length); };
-  const prev = () => { setFlipped(false); setIdx((i) => (i - 1 + cards.length) % cards.length); };
-  const shuffle = () => { setCards([...cards].sort(() => Math.random() - 0.5)); setIdx(0); setFlipped(false); };
+  const generate = async () => {
+    if (!doc?.fileName || loading) return;
+    setLoading(true);
+    setError(null);
+    try {
+      const list = normalize(await IntelliLearnAPI.flashcards(doc.fileName));
+      if (!list.length) throw new Error("empty");
+      setCards(list);
+      setIndex(0);
+      setFlipped(false);
+      toast.success(`${list.length} flashcards ready`);
+    } catch (err) {
+      setError(friendlyAIError(err));
+    } finally {
+      setLoading(false);
+    }
+  };
 
-  const card = cards[idx];
-  const progress = ((idx + 1) / cards.length) * 100;
+  const go = (i: number) => { setIndex(i); setFlipped(false); };
+  const card = cards[index];
 
   return (
     <div>
-      <PageHeader
-        title="Flashcards"
-        subtitle="Master concepts with spaced repetition."
-        icon={Layers}
-        actions={
-          <div className="flex gap-2">
-            <Button variant="outline" onClick={shuffle}><Shuffle className="mr-1 h-4 w-4" />Shuffle</Button>
-            <Button variant="outline"><Download className="mr-1 h-4 w-4" />Export</Button>
-          </div>
-        }
-      />
+      <PageHeader title="Flashcards" subtitle="Flip through 10 cards made from your PDF." icon={Layers} />
 
-      <div className="mx-auto max-w-2xl">
-        <div className="mb-4 flex items-center justify-between text-sm">
-          <Badge variant="outline">Card {idx + 1} of {cards.length}</Badge>
-          <span className="text-muted-foreground">{Math.round(progress)}% complete</span>
+      <Card className="glass mb-6 p-6">
+        <div className="grid gap-4 md:grid-cols-[minmax(0,1fr)_auto] md:items-end">
+          <PdfSelect docs={docs} value={docId} onChange={(v) => { setDocId(v); setError(null); setCards([]); }} disabled={loading} />
+          <Button className="gradient-bg text-white glow" onClick={generate} disabled={!doc || loading}>
+            {loading ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : cards.length ? <RefreshCw className="mr-1 h-4 w-4" /> : <Sparkles className="mr-1 h-4 w-4" />}
+            {loading ? "Generating…" : cards.length ? "Regenerate Flashcards" : "Generate Flashcards"}
+          </Button>
         </div>
-        <Progress value={progress} className="mb-6 h-1.5" />
+      </Card>
 
-        <div className="relative h-[380px] [perspective:1200px]">
-          <AnimatePresence mode="wait">
-            <motion.button
-              key={idx + (flipped ? "-b" : "-f")}
-              onClick={() => setFlipped((f) => !f)}
-              initial={{ rotateY: flipped ? -180 : 180, opacity: 0 }}
-              animate={{ rotateY: 0, opacity: 1 }}
-              exit={{ opacity: 0 }}
+      {error && (
+        <Card className="mb-6 flex flex-wrap items-center gap-3 border-destructive/50 bg-destructive/10 p-4 text-sm">
+          <AlertCircle className="h-4 w-4 shrink-0 text-destructive" />
+          <div className="flex-1">{error}</div>
+          <Button size="sm" variant="outline" onClick={generate} disabled={loading}>Try again</Button>
+        </Card>
+      )}
+
+      {loading ? (
+        <Card className="glass flex flex-col items-center gap-3 p-14 text-center">
+          <Loader2 className="h-8 w-8 animate-spin text-brand-accent" />
+          <div className="text-lg font-semibold">Reading your PDF and making flashcards…</div>
+          <p className="text-sm text-muted-foreground">This can take up to a minute.</p>
+        </Card>
+      ) : !cards.length ? (
+        <Card className="glass flex flex-col items-center gap-3 p-14 text-center">
+          <div className="grid h-14 w-14 place-items-center rounded-2xl gradient-bg glow"><Layers className="h-6 w-6 text-white" /></div>
+          <div className="text-lg font-semibold">{docs.length ? "No flashcards yet" : "Upload a PDF to get started"}</div>
+          <p className="max-w-sm text-sm text-muted-foreground">
+            {docs.length ? "Pick a PDF above and click Generate Flashcards." : "Flashcards are made from PDFs you upload. Older uploads may need to be uploaded again."}
+          </p>
+          {!docs.length && <UploadPrompt />}
+        </Card>
+      ) : (
+        <div className="mx-auto max-w-2xl">
+          <div className="mb-2 flex items-center justify-between text-sm">
+            <span className="font-medium">Card {index + 1} of {cards.length}</span>
+            <span className="text-muted-foreground">Tap the card to flip</span>
+          </div>
+          <Progress value={((index + 1) / cards.length) * 100} className="mb-5 h-1.5" />
+
+          <button type="button" aria-label="Flip card" onClick={() => setFlipped((f) => !f)} className="block w-full [perspective:1200px]">
+            <motion.div
+              animate={{ rotateY: flipped ? 180 : 0 }}
               transition={{ duration: 0.5 }}
-              className="absolute inset-0 [transform-style:preserve-3d]"
+              className="relative h-72 w-full [transform-style:preserve-3d] sm:h-80"
             >
-              <Card className={`glass flex h-full flex-col items-center justify-center gap-4 p-10 text-center transition ${flipped ? "border-brand-accent/40" : "border-brand/40"} glow`}>
-                <Badge className={flipped ? "bg-brand-accent text-white" : "gradient-bg text-white"}>
-                  {flipped ? "Answer" : "Question"}
-                </Badge>
-                <p className="text-2xl font-semibold leading-relaxed sm:text-3xl">
-                  {flipped ? card.back : card.front}
-                </p>
-                <div className="mt-auto flex items-center gap-2 text-xs text-muted-foreground">
-                  <RotateCcw className="h-3 w-3" /> Click card to flip
-                </div>
-              </Card>
-            </motion.button>
-          </AnimatePresence>
-        </div>
+              <div className="glass absolute inset-0 flex flex-col items-center justify-center rounded-2xl border border-border p-8 text-center [backface-visibility:hidden]">
+                <div className="mb-3 text-xs font-semibold uppercase tracking-wider text-brand-accent">Question</div>
+                <div className="text-lg font-semibold leading-snug sm:text-xl">{card.front}</div>
+              </div>
+              <div className="absolute inset-0 flex flex-col items-center justify-center overflow-auto rounded-2xl gradient-bg p-8 text-center text-white [backface-visibility:hidden] [transform:rotateY(180deg)]">
+                <div className="mb-3 text-xs font-semibold uppercase tracking-wider text-white/80">Answer</div>
+                <div className="text-base leading-relaxed sm:text-lg">{card.back}</div>
+              </div>
+            </motion.div>
+          </button>
 
-        <div className="mt-6 flex items-center justify-between gap-3">
-          <Button size="lg" variant="outline" onClick={prev}><ChevronLeft className="mr-1 h-4 w-4" />Previous</Button>
-          <div className="flex gap-1">
-            {cards.map((_, i) => (
-              <button key={i} onClick={() => { setIdx(i); setFlipped(false); }} className={`h-1.5 w-6 rounded-full transition ${i === idx ? "gradient-bg" : "bg-border"}`} />
-            ))}
+          <div className="mt-6 flex flex-wrap items-center justify-between gap-2">
+            <Button variant="outline" onClick={() => go(index - 1)} disabled={index === 0}><ChevronLeft className="mr-1 h-4 w-4" />Previous</Button>
+            <div className="flex gap-2">
+              <Button variant="outline" onClick={() => setFlipped((f) => !f)}><Repeat className="mr-1 h-4 w-4" />Flip</Button>
+              <Button variant="ghost" onClick={() => go(0)}><RotateCcw className="mr-1 h-4 w-4" />Restart</Button>
+            </div>
+            <Button className="gradient-bg text-white" onClick={() => go(index + 1)} disabled={index + 1 >= cards.length}>Next<ChevronRight className="ml-1 h-4 w-4" /></Button>
           </div>
-          <Button size="lg" className="gradient-bg text-white glow" onClick={next}>Next<ChevronRight className="ml-1 h-4 w-4" /></Button>
         </div>
-      </div>
+      )}
     </div>
   );
 }

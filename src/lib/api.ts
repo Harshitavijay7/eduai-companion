@@ -62,9 +62,8 @@ export const IntelliLearnAPI = {
     api
       .post<{ success?: boolean; fileName?: string; notes?: string; message?: string }>("/notes", { fileName })
       .then((r) => r.data),
-  mcq: (docId: string, count: number, difficulty: string) =>
-    api.get("/mcq", { params: { doc_id: docId, count, difficulty } }).then((r) => r.data),
-  flashcards: (docId: string) => api.get("/flashcards", { params: { doc_id: docId } }).then((r) => r.data),
+  mcqs: (fileName: string) => api.post<unknown>("/mcqs", { fileName }).then((r) => r.data),
+  flashcards: (fileName: string) => api.post<unknown>("/flashcards", { fileName }).then((r) => r.data),
   analytics: () => api.get("/analytics").then((r) => r.data),
   ocr: (file: File) => {
     const fd = new FormData();
